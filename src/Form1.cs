@@ -35,7 +35,7 @@ namespace Clip2Key.Net
         private static Keys _shortcutkey = Keys.RControlKey;
         private delegate IntPtr LowLevelKeyboardProc(
         int nCode, IntPtr wParam, IntPtr lParam);
-        private static int _keyStrokeDelay = 0;
+        private static int _keyStrokeDelay = 1;
 
         //Set the hook to catch keyboard keypresses - used to catch the bound keyboard shortcut to type out the clipboard
         private static IntPtr SetHook(LowLevelKeyboardProc proc)
@@ -50,6 +50,9 @@ namespace Clip2Key.Net
         }
         private static IntPtr HookCallback(int nCode, IntPtr wParam, IntPtr lParam)
         {
+
+            
+
             if (nCode >= 0 && wParam == (IntPtr)WM_KEYDOWN)
             {
                 int vkCode = Marshal.ReadInt32(lParam);
@@ -72,7 +75,7 @@ namespace Clip2Key.Net
         {
             try
             {
-                Send2Keyboard(this.txtClip.Text, int.Parse(txtDelay.Text));
+                Send2Keyboard(this.txtClip.Text, _keyStrokeDelay);
             }
             catch(Exception ex)
             {
@@ -86,6 +89,7 @@ namespace Clip2Key.Net
         {
             try
             {
+                this.txtDelay.Text = _keyStrokeDelay.ToString();
                 //setup the hook
                 _hookID = SetHook(_proc);
 
@@ -123,7 +127,9 @@ namespace Clip2Key.Net
             foreach (char c in data)
             {
                 sim.Keyboard.TextEntry(c);
-                System.Threading.Thread.Sleep(delay);
+                if(delay > 0 )
+                    System.Threading.Thread.Sleep(delay);
+
                 blockCounter++;
                 if (blockCounter >= 100)
                 {
@@ -189,16 +195,36 @@ namespace Clip2Key.Net
 
         private void chkAddDelay_CheckedChanged(object sender, EventArgs e)
         {
-            try
-            {
-                if (this.chkAddDelay.Checked)
-                    _keyStrokeDelay = int.Parse(txtDelay.Text);
-            }
-            catch(Exception ex)
-            {
-                MessageBox.Show($"{ex.Message} \n {ex.StackTrace}");
-                return;
-            }
+            
         }
+
+        private void txtDelay_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            //only allow integer values to be entered
+            int result = 0;
+            bool success = int.TryParse(e.KeyChar.ToString(), out result);
+            if (!success)
+                e.Handled = true; //stop the char from being entered into the control
+        }
+
+        private void Form1_MouseMove(object sender, MouseEventArgs e)
+        {
+            UpdateKeystrokeDelay();
+        }
+
+        private void txtDelay_Leave(object sender, EventArgs e)
+        {
+            UpdateKeystrokeDelay();
+        }
+
+        private void UpdateKeystrokeDelay()
+        {
+            //update the static keystroke delay
+            int result = 0;
+            bool success = int.TryParse(this.txtDelay.Text, out result);
+            if (_keyStrokeDelay != result)
+                _keyStrokeDelay = result;
+        }
+
     }
 }

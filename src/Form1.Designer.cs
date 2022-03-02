@@ -36,7 +36,6 @@ namespace Clip2Key.Net
             this.label1 = new System.Windows.Forms.Label();
             this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
             this.cboKey = new System.Windows.Forms.ComboBox();
-            this.chkAddDelay = new System.Windows.Forms.CheckBox();
             this.txtDelay = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.SuspendLayout();
@@ -83,24 +82,15 @@ namespace Clip2Key.Net
             this.cboKey.TabIndex = 4;
             this.cboKey.SelectedIndexChanged += new System.EventHandler(this.cboKey_SelectedIndexChanged);
             // 
-            // chkAddDelay
-            // 
-            this.chkAddDelay.AutoSize = true;
-            this.chkAddDelay.Location = new System.Drawing.Point(261, 162);
-            this.chkAddDelay.Name = "chkAddDelay";
-            this.chkAddDelay.Size = new System.Drawing.Size(218, 17);
-            this.chkAddDelay.TabIndex = 5;
-            this.chkAddDelay.Text = "Add the entered delay to each keystroke";
-            this.chkAddDelay.UseVisualStyleBackColor = true;
-            this.chkAddDelay.CheckedChanged += new System.EventHandler(this.chkAddDelay_CheckedChanged);
-            // 
             // txtDelay
             // 
             this.txtDelay.Location = new System.Drawing.Point(127, 160);
             this.txtDelay.Name = "txtDelay";
             this.txtDelay.Size = new System.Drawing.Size(92, 20);
             this.txtDelay.TabIndex = 6;
-            this.txtDelay.Text = "250";
+            this.txtDelay.Text = "1";
+            this.txtDelay.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtDelay_KeyPress);
+            this.txtDelay.Leave += new System.EventHandler(this.txtDelay_Leave);
             // 
             // label2
             // 
@@ -118,7 +108,6 @@ namespace Clip2Key.Net
             this.ClientSize = new System.Drawing.Size(491, 248);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.txtDelay);
-            this.Controls.Add(this.chkAddDelay);
             this.Controls.Add(this.cboKey);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.txtClip);
@@ -130,6 +119,7 @@ namespace Clip2Key.Net
             this.Text = "Clip2Key";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_FormClosed);
             this.Load += new System.EventHandler(this.Form1_Load);
+            this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseMove);
             this.Resize += new System.EventHandler(this.Form1_Resize);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -142,7 +132,6 @@ namespace Clip2Key.Net
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.NotifyIcon notifyIcon1;
         private System.Windows.Forms.ComboBox cboKey;
-        private System.Windows.Forms.CheckBox chkAddDelay;
         private System.Windows.Forms.TextBox txtDelay;
         private System.Windows.Forms.Label label2;
     }
