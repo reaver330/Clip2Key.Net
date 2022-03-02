@@ -50,20 +50,30 @@ namespace Clip2Key.Net
         }
         private static IntPtr HookCallback(int nCode, IntPtr wParam, IntPtr lParam)
         {
-
-            
-
-            if (nCode >= 0 && wParam == (IntPtr)WM_KEYDOWN)
+            try
             {
-                int vkCode = Marshal.ReadInt32(lParam);
-                System.Diagnostics.Debug.WriteLine((Keys)vkCode);
-                if ((Keys)vkCode == _shortcutkey)
+                if (nCode >= 0 && wParam == (IntPtr)WM_KEYDOWN)
                 {
-                    Send2Keyboard(Clipboard.GetText(), _keyStrokeDelay);
+                    int vkCode = Marshal.ReadInt32(lParam);
+                    System.Diagnostics.Debug.WriteLine((Keys)vkCode);
+                    if ((Keys)vkCode == _shortcutkey)
+                    {
+                        Send2Keyboard(Clipboard.GetText(), _keyStrokeDelay);
+                    }
                 }
+                return CallNextHookEx(_hookID, nCode, wParam, lParam);
             }
-            return CallNextHookEx(_hookID, nCode, wParam, lParam);
+            catch(Exception ex)
+            {
+                HandleError(ex);
+                return CallNextHookEx(_hookID, nCode, wParam, lParam);
+            }
+        }
 
+        private static void HandleError(Exception ex)
+        {
+            MessageBox.Show($"{ex.Message} \n {ex.StackTrace}");
+            UnhookWindowsHookEx(_hookID);
         }
 
         public Form1()
@@ -79,9 +89,7 @@ namespace Clip2Key.Net
             }
             catch(Exception ex)
             {
-                MessageBox.Show($"{ex.Message} \n {ex.StackTrace}");
-                UnhookWindowsHookEx(_hookID);
-                return;
+                HandleError(ex);
             }
         }
 
@@ -103,9 +111,7 @@ namespace Clip2Key.Net
             }
             catch(Exception ex)
             {
-                MessageBox.Show($"{ex.Message} \n {ex.StackTrace}");
-                UnhookWindowsHookEx(_hookID);
-                return;
+                HandleError(ex);
             }
         }
 
@@ -191,11 +197,6 @@ namespace Clip2Key.Net
             Keys k = (Keys)this.cboKey.SelectedItem;
             _shortcutkey = k;
             this.label1.Text = $"Types the contents of the clipboard when {_shortcutkey} is pressed";
-        }
-
-        private void chkAddDelay_CheckedChanged(object sender, EventArgs e)
-        {
-            
         }
 
         private void txtDelay_KeyPress(object sender, KeyPressEventArgs e)
